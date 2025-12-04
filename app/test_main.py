@@ -11,7 +11,12 @@ def test_data_is_today(today_mock: Mock) -> None:
     today_mock.return_value = datetime.date(2022, 2, 10)
 
     products = [
-        {"name": "tuna", "expiration_date": datetime.date(2022, 2, 10), "price": 400},
+        {
+            "name": "tuna",
+            "expiration_date": datetime.date(
+                2022, 2, 10
+            ),
+            "price": 400},
     ]
 
     result = outdated_products(products)
@@ -23,7 +28,11 @@ def test_data_is_today(today_mock: Mock) -> None:
 def test_product_expired(today_mock: Mock) -> None:
     today_mock.return_value = datetime.date(2022, 2, 10)
     products = [
-        {"name": "tuna", "expiration_date": datetime.date(2022, 2, 11), "price": 400},
+        {"name": "tuna",
+         "expiration_date": datetime.date(
+             2022, 2, 11
+         ),
+         "price": 400},
     ]
     result = outdated_products(products)
     assert result == []
@@ -33,7 +42,10 @@ def test_product_expired(today_mock: Mock) -> None:
 def test_data_is_valid(today_mock: Mock) -> None:
     today_mock.return_value = datetime.date(2022, 2, 10)
     products = [
-        {"name": "tuna", "expiration_date": datetime.date(2022, 2, 9), "price": 400},
+        {
+            "name": "tuna",
+            "expiration_date": datetime.date(2022, 2, 9),
+            "price": 400},
     ]
     result = outdated_products(products)
     assert result == ["tuna"]
