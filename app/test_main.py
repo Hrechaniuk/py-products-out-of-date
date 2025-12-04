@@ -1,15 +1,17 @@
 import datetime
 
 from unittest import mock
-from unittest.mock import Mock
 
 from app.main import outdated_products
 
 
-@mock.patch("app.main.datetime.date.today")
-def test_data_is_today(today_mock: Mock) -> None:
-    today_mock.return_value = datetime.date(2022, 2, 10)
+class MyDate(datetime.date):
+    @classmethod
+    def today(cls) -> datetime.date:
+        return cls(2022, 2, 10)
 
+
+def test_data_is_today() -> None:
     products = [
         {
             "name": "tuna",
@@ -19,14 +21,13 @@ def test_data_is_today(today_mock: Mock) -> None:
             "price": 400},
     ]
 
-    result = outdated_products(products)
+    with mock.patch("app.main.datetime.date", MyDate):
+        result = outdated_products(products)
 
     assert result == []
 
 
-@mock.patch("app.main.datetime.date.today")
-def test_product_expired(today_mock: Mock) -> None:
-    today_mock.return_value = datetime.date(2022, 2, 10)
+def test_product_expired() -> None:
     products = [
         {"name": "tuna",
          "expiration_date": datetime.date(
@@ -34,26 +35,29 @@ def test_product_expired(today_mock: Mock) -> None:
          ),
          "price": 400},
     ]
-    result = outdated_products(products)
+    with mock.patch("app.main.datetime.date", MyDate):
+        result = outdated_products(products)
+
     assert result == []
 
 
-@mock.patch("app.main.datetime.date.today")
-def test_data_is_valid(today_mock: Mock) -> None:
-    today_mock.return_value = datetime.date(2022, 2, 10)
+def test_product_is_valid() -> None:
     products = [
-        {
-            "name": "tuna",
-            "expiration_date": datetime.date(2022, 2, 9),
-            "price": 400},
+        {"name": "tuna",
+         "expiration_date": datetime.date(
+             2022, 2, 9
+         ),
+         "price": 400},
     ]
-    result = outdated_products(products)
+    with mock.patch("app.main.datetime.date", MyDate):
+        result = outdated_products(products)
+
     assert result == ["tuna"]
 
 
-@mock.patch("app.main.datetime.date.today")
-def test_empty_products(today_mock: Mock) -> None:
-    today_mock.return_value = datetime.date(2022, 2, 10)
+def test_list_is_empty() -> None:
     products = []
-    result = outdated_products(products)
+    with mock.patch("app.main.datetime.date", MyDate):
+        result = outdated_products(products)
+
     assert result == []
